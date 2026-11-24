@@ -3,14 +3,7 @@ import { TodoModel, toTodo } from "../models/Todo";
 
 export const todosRouter = Router();
 
-// Issue 2: add the routes here. The router is already mounted on /api/todos in app.ts.
-// GET    /api/todos       -> 200 with the list of todos
-// POST   /api/todos       -> 201 with the new todo
-// PUT    /api/todos/:id   -> 200 with the updated todo, 404 for an unknown id
-// DELETE /api/todos/:id   -> 204 without a body, 404 for an unknown id
-//
-
-// The contract is in docs/api-contract.md at the root of the project.
+// The router is mounted on /api/todos in app.ts. The contract is in docs/api-contract.md.
 todosRouter.get("/", async (_request, response) => {
     const todos = await TodoModel.find();
     response.json(todos.map(toTodo));
@@ -18,7 +11,7 @@ todosRouter.get("/", async (_request, response) => {
 todosRouter.post("/", async (request, response) => {
     const created = await TodoModel.create(request.body);
     // 201 = "created". toTodo turns the Mongo document ({ _id, __v, ... })
-    // into the contract's shape: { id, title, done }.
+    // into the contract's shape: { id, title, done, priority, dueAt }.
     response.status(201).json(toTodo(created));
 });
 todosRouter.put("/:id", async (request, response) => {
