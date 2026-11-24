@@ -151,113 +151,113 @@ useEffect(() => {
       {page === "progress" && <Progress todos={todos ?? []} />}
       {page === "todos" && (
         <>
-      <form className="todo-form" onSubmit={handleSubmit}>
-        <label className="visually-hidden" htmlFor="new-todo">
-          New todo
-        </label>
-        <input
-          id="new-todo"
-          type="text"
-          placeholder="What do you have to do?"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
-        <label className="visually-hidden" htmlFor="new-priority">
-          Priority
-        </label>
-        <select
-          id="new-priority"
-          value={priority}
-          onChange={(event) => setPriority(event.target.value as Priority)}
-        >
-          <option value="low">Low</option>
-          <option value="medium">Medium</option>
-          <option value="high">High</option>
-        </select>
-        <label className="visually-hidden" htmlFor="new-due">
-          Time (optional)
-        </label>
-        <input
-          id="new-due"
-          type="datetime-local"
-          value={dueAt}
-          onChange={(event) => setDueAt(event.target.value)}
-        />
-        {/* Not sent for an empty or blank title, and not twice while the request runs. */}
-        <button type="submit" disabled={title.trim() === "" || isSaving}>
-          Add
-        </button>
-      </form>
-      {/* The message of a failed add, edit, delete or tick. The list below stays as it was. */}
-      {actionError !== null && <p role="alert">{actionError}</p>}
-      {error ? (
-        // The list could not be loaded: the message and "Try again" replace the list.
-        <div className="error-box" role="alert">
-          <p>Could not load the todos.</p>
-          <p>{errorText(error)}</p>
-          <button type="button" onClick={() => mutate()}>
-            Try again
-          </button>
-        </div>
-      ) : (
-        <>
-      {isLoading && <p>Loading...</p>}
-      {todos?.length === 0 && (
-        <>
-          <p>No todos yet 🙂</p>
-          <p>Add your first todo with the form above.</p>
-        </>
-      )}
-      <ul className="todo-list">
-        {todos?.map((todo) => (
-          <li key={todo.id} className="todo-item">
-            {editingId === todo.id ? (
-              <form className="todo-edit" onSubmit={(event) => handleSave(event, todo)}>
-                <label className="visually-hidden" htmlFor={`edit-${todo.id}`}>
-                  Title of the todo
-                </label>
-                <input
-                  id={`edit-${todo.id}`}
-                  type="text"
-                  value={editTitle}
-                  onChange={(event) => setEditTitle(event.target.value)}
-                />
-                {/* An empty or blank title is never sent: "Save" stays disabled. */}
-                <button type="submit" disabled={editTitle.trim() === ""}>
-                  Save
-                </button>
-                <button type="button" onClick={handleCancel}>
-                  Cancel
-                </button>
-              </form>
-            ) : (
-              <>
-                <label className={todo.done ? "todo-title done" : "todo-title"}>
-                  <input type="checkbox" checked={todo.done} onChange={() => handleToggle(todo)} />
-                  {todo.title}
-                </label>
-                <span className={`tag tag-${todo.priority}`}>{todo.priority}</span>
-                {todo.dueAt !== null && (
-                  <time className="due" dateTime={todo.dueAt}>
-                    {new Date(todo.dueAt).toLocaleString([], {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    })}
-                  </time>
-                )}
-                <button type="button" onClick={() => handleEdit(todo)}>
-                  Edit
-                </button>
-                <button type="button" className="delete" onClick={() => handleDelete(todo)}>
-                  Delete
-                </button>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
-        </>
-      )}
+          <form className="todo-form" onSubmit={handleSubmit}>
+            <label className="visually-hidden" htmlFor="new-todo">
+              New todo
+            </label>
+            <input
+              id="new-todo"
+              type="text"
+              placeholder="What do you have to do?"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+            <label className="visually-hidden" htmlFor="new-priority">
+              Priority
+            </label>
+            <select
+              id="new-priority"
+              value={priority}
+              onChange={(event) => setPriority(event.target.value as Priority)}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+            <label className="visually-hidden" htmlFor="new-due">
+              Time (optional)
+            </label>
+            <input
+              id="new-due"
+              type="datetime-local"
+              value={dueAt}
+              onChange={(event) => setDueAt(event.target.value)}
+            />
+            {/* Not sent for an empty or blank title, and not twice while the request runs. */}
+            <button type="submit" disabled={title.trim() === "" || isSaving}>
+              Add
+            </button>
+          </form>
+          {/* The message of a failed add, edit, delete or tick. The list below stays as it was. */}
+          {actionError !== null && <p role="alert">{actionError}</p>}
+          {error ? (
+            // The list could not be loaded: the message and "Try again" replace the list.
+            <div className="error-box" role="alert">
+              <p>Could not load the todos.</p>
+              <p>{errorText(error)}</p>
+              <button type="button" onClick={() => mutate()}>
+                Try again
+              </button>
+            </div>
+          ) : (
+            <>
+              {isLoading && <p>Loading...</p>}
+              {todos?.length === 0 && (
+                <>
+                  <p>No todos yet 🙂</p>
+                  <p>Add your first todo with the form above.</p>
+                </>
+              )}
+              <ul className="todo-list">
+                {todos?.map((todo) => (
+                  <li key={todo.id} className="todo-item">
+                    {editingId === todo.id ? (
+                      <form className="todo-edit" onSubmit={(event) => handleSave(event, todo)}>
+                        <label className="visually-hidden" htmlFor={`edit-${todo.id}`}>
+                          Title of the todo
+                        </label>
+                        <input
+                          id={`edit-${todo.id}`}
+                          type="text"
+                          value={editTitle}
+                          onChange={(event) => setEditTitle(event.target.value)}
+                        />
+                        {/* An empty or blank title is never sent: "Save" stays disabled. */}
+                        <button type="submit" disabled={editTitle.trim() === ""}>
+                          Save
+                        </button>
+                        <button type="button" onClick={handleCancel}>
+                          Cancel
+                        </button>
+                      </form>
+                    ) : (
+                      <>
+                        <label className={todo.done ? "todo-title done" : "todo-title"}>
+                          <input type="checkbox" checked={todo.done} onChange={() => handleToggle(todo)} />
+                          {todo.title}
+                        </label>
+                        <span className={`tag tag-${todo.priority}`}>{todo.priority}</span>
+                        {todo.dueAt !== null && (
+                          <time className="due" dateTime={todo.dueAt}>
+                            {new Date(todo.dueAt).toLocaleString([], {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            })}
+                          </time>
+                        )}
+                        <button type="button" onClick={() => handleEdit(todo)}>
+                          Edit
+                        </button>
+                        <button type="button" className="delete" onClick={() => handleDelete(todo)}>
+                          Delete
+                        </button>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </>
       )}
     </main>

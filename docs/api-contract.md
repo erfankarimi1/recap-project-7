@@ -27,7 +27,7 @@ A response contains exactly these five fields: no `_id` and no `__v`.
 - `priority` must be `"low"`, `"medium"` or `"high"`. `dueAt` must be a valid date-time string or `null`. Anything else gives 400.
 - Todos that were saved before `priority` and `dueAt` existed are returned with `priority: "medium"` and `dueAt: null`.
 - `PUT` replaces `title`, `done`, `priority` and `dueAt`. Always send all four, also when you only change one of them.
-- A body that is not valid JSON gives 400. An `id` that is not a valid ObjectId gives 404.
+- A body that is not valid JSON gives 400 `{ "error": "Invalid JSON body" }`. An `id` that is not a valid ObjectId gives 404.
 - All errors look like `{ "error": "<message>" }`. An unexpected error gives 500 `{ "error": "Internal server error" }` without details.
 
 ## Examples
