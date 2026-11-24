@@ -7,6 +7,9 @@
   --border-soft: #dde4e9;
   --button-bg: #ffffff;
   --hover: #f1f5f8;
+  --high: #b91c1c;
+  --medium: #a16207;
+  --low: #15803d;
   --toggle-bg: #243c4c;
   --toggle-text: #ffffff;
   --error: #b91c1c;
@@ -23,6 +26,9 @@
   --border-soft: #253946;
   --button-bg: #1a2c38;
   --hover: #182a36;
+  --high: #f87171;
+  --medium: #facc15;
+  --low: #4ade80;
   --toggle-bg: #e3ebf0;
   --toggle-text: #0f1b24;
   --error: #f87171;
@@ -37,6 +43,9 @@
     --border-soft: #253946;
     --button-bg: #1a2c38;
     --hover: #182a36;
+    --high: #f87171;
+    --medium: #facc15;
+    --low: #4ade80;
     --toggle-bg: #e3ebf0;
     --toggle-text: #0f1b24;
     --error: #f87171;
@@ -208,4 +217,148 @@ button:disabled {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+/* Header: title, page buttons and the theme toggle in one row. */
+.app-header {
+  gap: 0.75rem;
+}
+
+.app-header h1 {
+  margin-right: auto;
+}
+
+.page-nav {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.page-nav button[aria-pressed="true"] {
+  background: var(--toggle-bg);
+  color: var(--toggle-text);
+}
+
+/* The add form wraps on small screens: title, priority, time, Add. */
+.todo-form {
+  flex-wrap: wrap;
+}
+
+.todo-form input:not([type]),
+.todo-form input[type="text"] {
+  flex: 1 1 12rem;
+}
+
+.todo-form input[type="datetime-local"] {
+  flex: 0 1 auto;
+}
+
+select {
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Rows */
+.todo-item {
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+.tag-high {
+  color: var(--high);
+}
+
+.tag-medium {
+  color: var(--medium);
+}
+
+.tag-low {
+  color: var(--low);
+}
+
+.due {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.todo-item button.delete {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+/* Progress page */
+.progress h2 {
+  font-size: 1.1rem;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.progress-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.progress-row {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr 4rem;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+}
+
+.progress-label {
+  text-transform: capitalize;
+}
+
+.progress-count {
+  text-align: right;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.progress-summary {
+  color: var(--text-muted);
+  margin: 0 0 0.5rem;
+}
+
+.bar {
+  display: block;
+  height: 0.75rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--border-soft);
+}
+
+.bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--toggle-bg);
+  transition: width 0.3s ease;
+}
+
+.bar-high {
+  background: var(--high);
+}
+
+.bar-medium {
+  background: var(--medium);
+}
+
+.bar-low {
+  background: var(--low);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar-fill {
+    transition: none;
+  }
 }
