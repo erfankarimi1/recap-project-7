@@ -17,12 +17,13 @@ A response contains exactly these five fields: no `_id` and no `__v`.
 | Method and path         | Body                                                  | Success                  | Errors                                               |
 | ----------------------- | ----------------------------------------------------- | ------------------------ | ---------------------------------------------------- |
 | `GET /api/health`       |                                                       | 200 `{ "status": "ok" }` |                                                      |
-| `GET /api/todos`        |                                                       | 200 `Todo[]`             |                                                      |
+| `GET /api/todos`        | optional query: `?done=true` or `?done=false`         | 200 `Todo[]`             | 400 `{ "error": "done must be true or false" }`      |
 | `POST /api/todos`       | `{ "title": "...", "priority"?, "dueAt"? }`           | 201 `Todo`               | 400 `{ "error": "<message>" }`                       |
 | `PUT /api/todos/:id`    | `{ "title", "done", "priority", "dueAt" }`            | 200 `Todo`               | 400 `{ "error": "<message>" }`, 404 `Todo not found` |
 | `DELETE /api/todos/:id` |                                                       | 204, no body             | 404 `{ "error": "Todo not found" }`                  |
 | any other route         |                                                       |                          | 404 `{ "error": "Not found" }`                       |
 
+- `GET /api/todos?done=true` returns only the done todos, `?done=false` only the open ones. Without `done`, all todos are returned. Any other value for `done` gives 400.
 - `POST` creates a todo with `done: false`. The title is trimmed. A missing or empty title gives 400. `priority` is optional and defaults to `"medium"`, `dueAt` is optional and defaults to `null`.
 - `priority` must be `"low"`, `"medium"` or `"high"`. `dueAt` must be a valid date-time string or `null`. Anything else gives 400.
 - Todos that were saved before `priority` and `dueAt` existed are returned with `priority: "medium"` and `dueAt: null`.

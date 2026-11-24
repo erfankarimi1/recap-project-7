@@ -1,3 +1,5 @@
+/* ---------- Colors ---------- */
+
 /* Light theme (default): solid white background, text color #243C4C. */
 :root {
   --bg: #ffffff;
@@ -5,6 +7,9 @@
   --text-muted: #6b7f8d;
   --border: #b7c3cc;
   --border-soft: #dde4e9;
+  --card: #ffffff;
+  --shadow: 0 1px 3px rgb(36 60 76 / 0.08);
+  --shadow-hover: 0 4px 12px rgb(36 60 76 / 0.12);
   --button-bg: #ffffff;
   --hover: #f1f5f8;
   --high: #b91c1c;
@@ -24,8 +29,11 @@
   --text-muted: #8fa3b1;
   --border: #46606f;
   --border-soft: #253946;
+  --card: #15252f;
+  --shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+  --shadow-hover: 0 4px 12px rgb(0 0 0 / 0.4);
   --button-bg: #1a2c38;
-  --hover: #182a36;
+  --hover: #1b303c;
   --high: #f87171;
   --medium: #facc15;
   --low: #4ade80;
@@ -41,8 +49,11 @@
     --text-muted: #8fa3b1;
     --border: #46606f;
     --border-soft: #253946;
+    --card: #15252f;
+    --shadow: 0 1px 3px rgb(0 0 0 / 0.3);
+    --shadow-hover: 0 4px 12px rgb(0 0 0 / 0.4);
     --button-bg: #1a2c38;
-    --hover: #182a36;
+    --hover: #1b303c;
     --high: #f87171;
     --medium: #facc15;
     --low: #4ade80;
@@ -56,27 +67,125 @@
   color-scheme: light;
 }
 
+/* ---------- Base ---------- */
+
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.5;
   background: var(--bg);
   color: var(--text);
 }
 
 main {
-  max-width: 32rem;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
 }
+
+h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: 0.5rem 0;
+}
+
+/* One clear focus ring for everything you can reach with the keyboard. */
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Form controls ---------- */
+
+input:not([type="checkbox"]),
+select {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+}
+
+input::placeholder {
+  color: var(--text-muted);
+}
+
+button {
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--button-bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  background: var(--hover);
+  border-color: var(--text-muted);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Header ---------- */
 
 .app-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.app-header h1 {
+  margin-right: auto;
+}
+
+.page-nav {
+  display: flex;
+  padding: 0.2rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--card);
+}
+
+.page-nav button {
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+}
+
+/* The pressed button of a button group (pages and filters) is the filled one. */
+.page-nav button[aria-pressed="true"],
+.filters button[aria-pressed="true"] {
+  background: var(--toggle-bg);
+  color: var(--toggle-text);
 }
 
 /* The dark round button: dark navy in light mode, light in dark mode. */
@@ -90,160 +199,27 @@ main {
   color: var(--toggle-text);
   font-size: 1.1rem;
   line-height: 1;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.25);
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: var(--shadow-hover);
 }
 
-.theme-toggle:hover {
-  transform: scale(1.1) rotate(15deg);
-  box-shadow: 0 4px 10px rgb(0 0 0 / 0.35);
-}
-
-/* No movement for people who asked their system to reduce motion. */
-@media (prefers-reduced-motion: reduce) {
-  .theme-toggle {
-    transition: none;
-  }
-
-  .theme-toggle:hover {
-    transform: none;
-  }
-}
-
-.theme-toggle:focus-visible {
-  outline: 2px solid var(--text);
-  outline-offset: 3px;
-}
-
-.todo-form {
-  display: flex;
-  gap: 0.5rem;
-  flex: 1;
-}
-
-.todo-form input {
-  flex: 1;
-}
-
-input:not([type="checkbox"]) {
-  padding: 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 0.25rem;
-  background: var(--bg);
-  color: var(--text);
-}
-
-button {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 0.25rem;
-  background: var(--button-bg);
-  color: var(--text);
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.todo-list {
-  list-style: none;
-  padding: 0;
-}
-
-.todo-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid var(--border-soft);
-  border-radius: 0.25rem;
-  transition: background-color 0.15s ease;
-}
-
-.todo-item:hover {
-  background: var(--hover);
-}
-
-.todo-title {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0 0.5rem;
-  cursor: pointer; /* the whole row is the label, so a click anywhere ticks the todo */
-  transition: color 0.15s ease;
-}
-
-/* Edit mode: the field takes the free space, "Save" and "Cancel" sit next to it. */
-.todo-edit {
-  display: flex;
-  flex: 1;
-  gap: 0.5rem;
-}
-
-.todo-edit input {
-  flex: 1;
-  min-width: 0;
-}
-
-.todo-item button {
-  padding: 0.25rem 0.6rem;
-  font-size: 0.875rem;
-}
-
-.todo-title input[type="checkbox"] {
-  width: 1.1rem;
-  height: 1.1rem;
-  margin: 0;
-  cursor: pointer;
-  accent-color: var(--toggle-bg);
-}
-
-.todo-title.done {
-  text-decoration: line-through;
-  color: var(--text-muted);
-}
-
-[role="alert"] {
-  color: var(--error);
-}
-
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
-
-/* Header: title, page buttons and the theme toggle in one row. */
-.app-header {
-  gap: 0.75rem;
-}
-
-.app-header h1 {
-  margin-right: auto;
-}
-
-.page-nav {
-  display: flex;
-  gap: 0.25rem;
-}
-
-.page-nav button[aria-pressed="true"] {
+.theme-toggle:hover:not(:disabled) {
   background: var(--toggle-bg);
-  color: var(--toggle-text);
+  transform: scale(1.1) rotate(15deg);
 }
 
-/* The add form wraps on small screens: title, priority, time, Add. */
+/* ---------- Add form and filters ---------- */
+
 .todo-form {
+  display: flex;
   flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 0.75rem;
+  background: var(--card);
+  box-shadow: var(--shadow);
 }
 
-.todo-form input:not([type]),
 .todo-form input[type="text"] {
   flex: 1 1 12rem;
 }
@@ -252,24 +228,116 @@ button:disabled {
   flex: 0 1 auto;
 }
 
-select {
-  padding: 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 0.25rem;
-  background: var(--bg);
-  color: var(--text);
+/* "Add" is the main action: filled. */
+.todo-form button[type="submit"] {
+  border-color: var(--toggle-bg);
+  background: var(--toggle-bg);
+  color: var(--toggle-text);
+  font-weight: 600;
 }
 
-/* Rows */
+.todo-form button[type="submit"]:hover:not(:disabled) {
+  background: var(--toggle-bg);
+  border-color: var(--toggle-bg);
+  opacity: 0.88;
+}
+
+.filters {
+  display: inline-flex;
+  gap: 0.25rem;
+  margin: 1.25rem 0 0.75rem;
+  padding: 0.2rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--card);
+}
+
+.filters button {
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+}
+
+/* ---------- Todo list ---------- */
+
+.todo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 .todo-item {
+  display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 0.75rem;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.todo-item:hover {
+  background: var(--hover);
+  box-shadow: var(--shadow-hover);
+}
+
+.todo-title {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 8rem;
+  cursor: pointer; /* the whole label is clickable, so a click on the title ticks the todo */
+  transition: color 0.15s ease;
+}
+
+.todo-title.done {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.todo-title input[type="checkbox"] {
+  width: 1.15rem;
+  height: 1.15rem;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--toggle-bg);
+}
+
+.todo-item button {
+  padding: 0.25rem 0.65rem;
+  font-size: 0.8rem;
+}
+
+.todo-item button.delete {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+/* Edit mode: the field takes the free space, "Save" and "Cancel" sit next to it. */
+.todo-edit {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.todo-edit input {
+  flex: 1 1 10rem;
+  min-width: 0;
 }
 
 .tag {
-  padding: 0.1rem 0.5rem;
+  padding: 0.05rem 0.6rem;
   border: 1px solid currentColor;
   border-radius: 999px;
-  font-size: 0.75rem;
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  font-size: 0.72rem;
+  font-weight: 600;
   text-transform: capitalize;
 }
 
@@ -290,15 +358,31 @@ select {
   font-size: 0.8rem;
 }
 
-.todo-item button.delete {
+[role="alert"] {
   color: var(--error);
+}
+
+/* The list could not be loaded: a box with the message and the "Try again" button. */
+.error-box {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--error);
+  border-radius: 0.75rem;
+}
+
+.error-box p {
+  margin: 0 0 0.5rem;
+}
+
+.error-box button {
   border-color: var(--error);
 }
 
-/* Progress page */
+/* ---------- Progress page ---------- */
+
 .progress h2 {
+  margin: 1.75rem 0 0.5rem;
   font-size: 1.1rem;
-  margin: 1.5rem 0 0.5rem;
 }
 
 .progress-list {
@@ -357,24 +441,35 @@ select {
   background: var(--low);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .bar-fill {
-    transition: none;
+/* ---------- Small screens and reduced motion ---------- */
+
+@media (max-width: 30rem) {
+  main {
+    padding-top: 1rem;
+  }
+
+  .app-header {
+    flex-wrap: wrap;
+  }
+
+  .todo-form input[type="datetime-local"],
+  .todo-form select {
+    flex: 1 1 8rem;
+  }
+
+  .todo-form button[type="submit"] {
+    flex: 1 1 100%;
   }
 }
 
-/* The list could not be loaded: a box with the message and the "Try again" button. */
-.error-box {
-  margin: 1rem 0;
-  padding: 0.75rem 1rem;
-  border: 1px solid var(--error);
-  border-radius: 0.25rem;
-}
+/* No movement for people who asked their system to reduce motion. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
 
-.error-box p {
-  margin: 0 0 0.5rem;
-}
-
-.error-box button {
-  border-color: var(--error);
+  .theme-toggle:hover:not(:disabled),
+  button:active:not(:disabled) {
+    transform: none;
+  }
 }

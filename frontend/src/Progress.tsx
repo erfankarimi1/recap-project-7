@@ -1,3 +1,6 @@
+import useSWR from "swr";
+
+import { fetchTodos } from "./api";
 import type { Priority, Todo } from "./types";
 
 const PRIORITIES: Priority[] = ["high", "medium", "low"];
@@ -46,7 +49,12 @@ function ProgressRow({ label, count, tone }: { label: string; count: Count; tone
   );
 }
 
-export default function Progress({ todos }: { todos: Todo[] }) {
+export default function Progress() {
+  // The progress always counts ALL todos, whatever filter the list has. This is the same SWR key
+  // as the "All" filter of the list, so the data is shared and cached.
+  const { data } = useSWR(["todos", "all"] as const, ([, current]) => fetchTodos(current));
+  const todos = data ?? [];
+
   // Weekly result: the current week, Monday to Sunday, by the due time of each todo.
   // Todos without a due time are not part of a week.
   const weekStart = startOfWeek(new Date());

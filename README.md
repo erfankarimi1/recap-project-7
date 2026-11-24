@@ -1,6 +1,6 @@
 # Todo App
 
-A full-stack todo app with React, Express and MongoDB. You can add, tick off, edit and delete todos, give each todo a priority and an optional time, and look at a progress page (done todos per priority and a result for the current week).
+A full-stack todo app with React, Express and MongoDB. You can add, tick off, edit and delete todos, show only the open or only the done ones, give each todo a priority and an optional time, and look at a progress page (done todos per priority and a result for the current week).
 
 - `backend/`: Express 5 API with MongoDB (mongoose), TypeScript, run with `tsx`
 - `frontend/`: React 19 app with Vite, TypeScript and SWR, plain CSS (light and dark mode)
