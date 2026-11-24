@@ -1,7 +1,8 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type SubmitEvent } from "react";
 import useSWR from "swr";
 
-import { createTodo, fetchTodos } from "./api";
+import { createTodo, fetchTodos, updateTodo } from "./api";
+import type { Todo } from "./types";
 
 type Theme = "light" | "dark";
 
@@ -21,6 +22,9 @@ function getInitialTheme(): Theme {
 export default function App() {
   const { data: todos, isLoading, mutate } = useSWR("todos", fetchTodos);
   const [title, setTitle] = useState("");
+  // The todo that is being edited (null = none) and the text in its field.
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
   // The CSS reads `data-theme` on <html> to pick the light or the dark colors.
@@ -33,12 +37,37 @@ export default function App() {
     }
   }, [theme]);
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault(); // no page reload
     await createTodo(title.trim());
     setTitle("");
     // Tell SWR that the list is out of date: it loads it again from the API.
     // (This `mutate` is already bound to the "todos" key, so it takes no key.)
+    await mutate();
+  }
+
+  async function handleToggle(todo: Todo) {
+    // Send the current title together with the flipped `done`, then reload the list.
+    await updateTodo({ ...todo, done: !todo.done });
+    await mutate();
+  }
+
+  function handleEdit(todo: Todo) {
+    // Start editing this todo (this closes the field of another one).
+    setEditingId(todo.id);
+    setEditTitle(todo.title);
+  }
+
+  function handleCancel() {
+    // Nothing is sent: the old title stays.
+    setEditingId(null);
+  }
+
+  async function handleSave(event: SubmitEvent<HTMLFormElement>, todo: Todo) {
+    event.preventDefault(); // no page reload
+    // PUT replaces the whole todo, so we send the new title with the unchanged `done`.
+    await updateTodo({ ...todo, title: editTitle.trim() });
+    setEditingId(null);
     await mutate();
   }
 
@@ -76,10 +105,36 @@ export default function App() {
       <ul className="todo-list">
         {todos?.map((todo) => (
           <li key={todo.id} className="todo-item">
-            <label className={todo.done ? "todo-title done" : "todo-title"}>
-              <input type="checkbox" checked={todo.done} readOnly />
-              {todo.title}
-            </label>
+            {editingId === todo.id ? (
+              <form className="todo-edit" onSubmit={(event) => handleSave(event, todo)}>
+                <label className="visually-hidden" htmlFor={`edit-${todo.id}`}>
+                  Title of the todo
+                </label>
+                <input
+                  id={`edit-${todo.id}`}
+                  type="text"
+                  value={editTitle}
+                  onChange={(event) => setEditTitle(event.target.value)}
+                />
+                {/* An empty or blank title is never sent: "Save" stays disabled. */}
+                <button type="submit" disabled={editTitle.trim() === ""}>
+                  Save
+                </button>
+                <button type="button" onClick={handleCancel}>
+                  Cancel
+                </button>
+              </form>
+            ) : (
+              <>
+                <label className={todo.done ? "todo-title done" : "todo-title"}>
+                  <input type="checkbox" checked={todo.done} onChange={() => handleToggle(todo)} />
+                  {todo.title}
+                </label>
+                <button type="button" onClick={() => handleEdit(todo)}>
+                  Edit
+                </button>
+              </>
+            )}
           </li>
         ))}
       </ul>

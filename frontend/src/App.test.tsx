@@ -88,7 +88,7 @@ describe("App", () => {
   it("shows a friendly message when there are no todos", async () => {
     renderApp([]);
 
-    expect(await screen.findByText("No todos yet.")).toBeTruthy();
+    expect(await screen.findByText("No todos yet 🙂")).toBeTruthy();
   });
 
   it("shows a done todo checked and struck through", async () => {

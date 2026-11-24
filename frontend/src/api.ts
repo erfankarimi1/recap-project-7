@@ -15,6 +15,19 @@ export async function fetchTodos(): Promise<Todo[]> {
   return response.json();
 }
 
+/** Updates a todo. PUT replaces the whole todo, so we always send `title` and `done`. */
+export async function updateTodo(todo: Todo): Promise<Todo> {
+  const response = await fetch(`${API_URL}/todos/${todo.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ title: todo.title, done: todo.done }),
+  });
+  if (!response.ok) {
+    throw new Error("Could not update the todo");
+  }
+  return response.json();
+}
+
 /** Creates a todo. The API trims the title and answers 201 with the new todo. */
 export async function createTodo(title: string): Promise<Todo> {
   const response = await fetch(`${API_URL}/todos`, {
