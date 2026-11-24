@@ -58,7 +58,7 @@ describe("App", () => {
   });
 
   it("clears the field and shows the new todo after saving", async () => {
-    const created: Todo = { id: "3", title: "Buy milk", done: false };
+    const created: Todo = { id: "3", title: "Buy milk", done: false, priority: "medium", dueAt: null };
     // First load: empty list. After saving, SWR loads again: the list has the new todo.
     vi.mocked(fetchTodos).mockResolvedValueOnce([]).mockResolvedValue([created]);
     vi.mocked(createTodo).mockResolvedValue(created);
@@ -74,7 +74,7 @@ describe("App", () => {
 
     expect(await screen.findByRole("checkbox", { name: "Buy milk" })).toBeTruthy();
     expect(createTodo).toHaveBeenCalledTimes(1);
-    expect(createTodo).toHaveBeenCalledWith("Buy milk");
+    expect(createTodo).toHaveBeenCalledWith({ title: "Buy milk", priority: "medium", dueAt: null });
     expect(field.value).toBe("");
     expect(fetchTodos).toHaveBeenCalledTimes(2);
   });
@@ -88,13 +88,13 @@ describe("App", () => {
   it("shows a friendly message when there are no todos", async () => {
     renderApp([]);
 
-    expect(await screen.findByText("No todos yet.")).toBeTruthy();
+    expect(await screen.findByText("No todos yet 🙂")).toBeTruthy();
   });
 
   it("shows a done todo checked and struck through", async () => {
     renderApp([
-      { id: "1", title: "Buy milk", done: true },
-      { id: "2", title: "Walk the dog", done: false },
+      { id: "1", title: "Buy milk", done: true, priority: "medium", dueAt: null },
+      { id: "2", title: "Walk the dog", done: false, priority: "medium", dueAt: null },
     ]);
 
     const done = await screen.findByRole("checkbox", { name: "Buy milk" });

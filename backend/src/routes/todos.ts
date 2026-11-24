@@ -16,10 +16,7 @@ todosRouter.get("/", async (_request, response) => {
     response.json(todos.map(toTodo));
 });
 todosRouter.post("/", async (request, response) => {
-    // create() validates the body against the schema. If it is invalid, the
-    // error handler answers with 400 { "error": "..." }.
     const created = await TodoModel.create(request.body);
-
     // 201 = "created". toTodo turns the Mongo document ({ _id, __v, ... })
     // into the contract's shape: { id, title, done }.
     response.status(201).json(toTodo(created));

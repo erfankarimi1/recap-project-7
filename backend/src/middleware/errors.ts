@@ -20,14 +20,23 @@ export const errorHandler: ErrorRequestHandler = (
   }
   // mongoose rejects data that breaks the schema, for example a todo without a title.
   if (err instanceof MongooseError.ValidationError) {
-    response
-      .status(400)
-      .json({ error: "A todo needs a title, and done must be true or false" });
+    response.status(400).json({
+      error:
+        "A todo needs a title, done must be true or false, priority must be low, medium or high and dueAt a valid date or null",
+    });
     return;
   }
-  // mongoose cannot turn an id like "abc" into an ObjectId.
   if (err instanceof MongooseError.CastError) {
-    response.status(404).json({ error: "Todo not found" });
+    // mongoose cannot turn an id like "abc" into an ObjectId: no todo has this id.
+    if (err.path === "_id") {
+      response.status(404).json({ error: "Todo not found" });
+      return;
+    }
+    // Any other field that cannot be cast (for example dueAt: "not a date" in a PUT) is bad input.
+    response.status(400).json({
+      error:
+        "A todo needs a title, done must be true or false, priority must be low, medium or high and dueAt a valid date or null",
+    });
     return;
   }
   // Log the details on the server, send nothing internal to the client.
