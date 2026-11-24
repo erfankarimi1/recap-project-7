@@ -1,9 +1,9 @@
 import { useEffect, useState, type SubmitEvent } from "react";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 
 import { createTodo, deleteTodo, fetchTodos, updateTodo } from "./api";
 import Progress from "./Progress";
-import type { Priority, Todo } from "./types";
+import type { Priority, Todo, TodoFilter } from "./types";
 
 type Theme = "light" | "dark";
 
@@ -26,7 +26,14 @@ function getInitialTheme(): Theme {
 }
 
 export default function App() {
-  const { data: todos, error, isLoading, mutate } = useSWR("todos", fetchTodos);
+  // Which todos the list shows. The filter is part of the SWR key, so every filter is its own
+  // request: the API does the filtering, not the browser.
+  const [filter, setFilter] = useState<TodoFilter>("all");
+  const { data: todos, error, isLoading, mutate } = useSWR(
+    ["todos", filter] as const,
+    ([, current]) => fetchTodos(current),
+  );
+  const { mutate: reloadAll } = useSWRConfig();
   // The message of the last failed add, edit, delete or tick (null = nothing failed).
   const [actionError, setActionError] = useState<string | null>(null);
   // True while "Add" waits for the API: a double click must not create two todos.
@@ -59,9 +66,8 @@ useEffect(() => {
     setActionError(null);
     try {
       await request();
-      // Tell SWR that the list is out of date: it loads it again from the API.
-      // (This `mutate` is already bound to the "todos" key, so it takes no key.)
-      await mutate();
+      // Tell SWR that every list (all, open, done) is out of date: they load again from the API.
+      await reloadAll((key) => Array.isArray(key) && key[0] === "todos");
     } catch (error) {
       setActionError(errorText(error));
     }
@@ -148,7 +154,7 @@ useEffect(() => {
           {theme === "dark" ? "☀️" : "🌙"}
         </button>
       </header>
-      {page === "progress" && <Progress todos={todos ?? []} />}
+      {page === "progress" && <Progress />}
       {page === "todos" && (
         <>
           <form className="todo-form" onSubmit={handleSubmit}>
@@ -188,6 +194,18 @@ useEffect(() => {
               Add
             </button>
           </form>
+          <div className="filters" role="group" aria-label="Show todos">
+            {(["all", "open", "done"] as const).map((option) => (
+              <button
+                key={option}
+                type="button"
+                aria-pressed={filter === option}
+                onClick={() => setFilter(option)}
+              >
+                {option === "all" ? "All" : option === "open" ? "Open" : "Done"}
+              </button>
+            ))}
+          </div>
           {/* The message of a failed add, edit, delete or tick. The list below stays as it was. */}
           {actionError !== null && <p role="alert">{actionError}</p>}
           {error ? (
@@ -202,12 +220,14 @@ useEffect(() => {
           ) : (
             <>
               {isLoading && <p>Loading...</p>}
-              {todos?.length === 0 && (
+              {todos?.length === 0 && filter === "all" && (
                 <>
                   <p>No todos yet 🙂</p>
                   <p>Add your first todo with the form above.</p>
                 </>
               )}
+              {todos?.length === 0 && filter === "open" && <p>No open todos. Nothing left to do 🎉</p>}
+              {todos?.length === 0 && filter === "done" && <p>No done todos yet. Tick one off!</p>}
               <ul className="todo-list">
                 {todos?.map((todo) => (
                   <li key={todo.id} className="todo-item">

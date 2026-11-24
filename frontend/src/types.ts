@@ -16,3 +16,6 @@ export type NewTodo = {
   priority: Priority;
   dueAt: string | null;
 };
+
+/** Which todos the list shows: all of them, only the open ones or only the done ones. */
+export type TodoFilter = "all" | "open" | "done";

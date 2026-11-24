@@ -1,4 +1,4 @@
-import type { NewTodo, Todo } from "./types";
+import type { NewTodo, Todo, TodoFilter } from "./types";
 
 // The backend allows requests from http://localhost:5173 (CORS), so the frontend can call it directly.
 export const API_URL = "http://localhost:3001/api";
@@ -25,9 +25,10 @@ async function request(path: string, fallback: string, init?: RequestInit): Prom
   return response;
 }
 
-/** Fetcher for `useSWR`: loads all todos. */
-export async function fetchTodos(): Promise<Todo[]> {
-  const response = await request("/todos", "The server answered with an error");
+/** Fetcher for `useSWR`: loads the todos. The API does the filtering (`?done=true` or `?done=false`). */
+export async function fetchTodos(filter: TodoFilter = "all"): Promise<Todo[]> {
+  const query = filter === "all" ? "" : `?done=${filter === "done"}`;
+  const response = await request(`/todos${query}`, "The server answered with an error");
   return response.json();
 }
 

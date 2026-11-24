@@ -4,8 +4,17 @@ import { TodoModel, toTodo } from "../models/Todo";
 export const todosRouter = Router();
 
 // The router is mounted on /api/todos in app.ts. The contract is in docs/api-contract.md.
-todosRouter.get("/", async (_request, response) => {
-    const todos = await TodoModel.find();
+todosRouter.get("/", async (request, response) => {
+    const { done } = request.query;
+
+    // Without `done` all todos are returned. Any other value than true or false is a bad request.
+    if (done !== undefined && done !== "true" && done !== "false") {
+        response.status(400).json({ error: "done must be true or false" });
+        return;
+    }
+
+    // The database does the filtering: only the matching todos are sent.
+    const todos = await TodoModel.find(done === undefined ? {} : { done: done === "true" });
     response.json(todos.map(toTodo));
 });
 todosRouter.post("/", async (request, response) => {
