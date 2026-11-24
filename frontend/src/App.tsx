@@ -7,6 +7,11 @@ import type { Priority, Todo } from "./types";
 
 type Theme = "light" | "dark";
 
+// The text to show for an error that was thrown by one of the functions in api.ts.
+function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : "Something went wrong";
+}
+
 // The saved choice wins. Without one, we follow the system setting.
 function getInitialTheme(): Theme {
   try {
@@ -21,7 +26,11 @@ function getInitialTheme(): Theme {
 }
 
 export default function App() {
-  const { data: todos, isLoading, mutate } = useSWR("todos", fetchTodos);
+  const { data: todos, error, isLoading, mutate } = useSWR("todos", fetchTodos);
+  // The message of the last failed add, edit, delete or tick (null = nothing failed).
+  const [actionError, setActionError] = useState<string | null>(null);
+  // True while "Add" waits for the API: a double click must not create two todos.
+  const [isSaving, setIsSaving] = useState(false);
   const [title, setTitle] = useState("");
   const [priority, setPriority] = useState<Priority>("medium");
   // The value of the time field: "" (no time) or "2026-11-30T09:00" (local time).
@@ -43,32 +52,50 @@ useEffect(() => {
     }
   }, [theme]);
 
+  // Runs a request. On success, SWR loads the list again. On failure, the message is shown and
+  // nothing else changes: the list stays as it was and the code after the request does not run,
+  // so the text the user typed is still there.
+  async function run(request: () => Promise<unknown>) {
+    setActionError(null);
+    try {
+      await request();
+      // Tell SWR that the list is out of date: it loads it again from the API.
+      // (This `mutate` is already bound to the "todos" key, so it takes no key.)
+      await mutate();
+    } catch (error) {
+      setActionError(errorText(error));
+    }
+  }
+
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault(); // no page reload
-    await createTodo({
-      title: title.trim(),
-      priority,
-      // The API wants an ISO string (with the time zone), so convert the local time.
-      dueAt: dueAt === "" ? null : new Date(dueAt).toISOString(),
+    if (isSaving) {
+      return;
+    }
+    setIsSaving(true);
+    await run(async () => {
+      await createTodo({
+        title: title.trim(),
+        priority,
+        // The API wants an ISO string (with the time zone), so convert the local time.
+        dueAt: dueAt === "" ? null : new Date(dueAt).toISOString(),
+      });
+      // Only after the todo was saved: clear the form.
+      setTitle("");
+      setPriority("medium");
+      setDueAt("");
     });
-    setTitle("");
-    setPriority("medium");
-    setDueAt("");
-    // Tell SWR that the list is out of date: it loads it again from the API.
-    // (This `mutate` is already bound to the "todos" key, so it takes no key.)
-    await mutate();
+    setIsSaving(false);
   }
 
   async function handleToggle(todo: Todo) {
-    // Send the current title together with the flipped `done`, then reload the list.
-    await updateTodo({ ...todo, done: !todo.done });
-    await mutate();
+    // Send the current title together with the flipped `done`.
+    await run(() => updateTodo({ ...todo, done: !todo.done }));
   }
 
   async function handleDelete(todo: Todo) {
     // The API answers 204 without a body. Then the list is loaded again, without the todo.
-    await deleteTodo(todo.id);
-    await mutate();
+    await run(() => deleteTodo(todo.id));
   }
 
   function handleEdit(todo: Todo) {
@@ -85,9 +112,11 @@ useEffect(() => {
   async function handleSave(event: SubmitEvent<HTMLFormElement>, todo: Todo) {
     event.preventDefault(); // no page reload
     // PUT replaces the whole todo, so we send the new title with the unchanged `done`.
-    await updateTodo({ ...todo, title: editTitle.trim() });
-    setEditingId(null);
-    await mutate();
+    await run(async () => {
+      await updateTodo({ ...todo, title: editTitle.trim() });
+      // Only after the todo was saved: close the field. After a failure it stays open with the text.
+      setEditingId(null);
+    });
   }
 
   return (
@@ -154,13 +183,31 @@ useEffect(() => {
           value={dueAt}
           onChange={(event) => setDueAt(event.target.value)}
         />
-        {/* An empty or blank title is never sent: the button stays disabled. */}
-        <button type="submit" disabled={title.trim() === ""}>
+        {/* Not sent for an empty or blank title, and not twice while the request runs. */}
+        <button type="submit" disabled={title.trim() === "" || isSaving}>
           Add
         </button>
       </form>
+      {/* The message of a failed add, edit, delete or tick. The list below stays as it was. */}
+      {actionError !== null && <p role="alert">{actionError}</p>}
+      {error ? (
+        // The list could not be loaded: the message and "Try again" replace the list.
+        <div className="error-box" role="alert">
+          <p>Could not load the todos.</p>
+          <p>{errorText(error)}</p>
+          <button type="button" onClick={() => mutate()}>
+            Try again
+          </button>
+        </div>
+      ) : (
+        <>
       {isLoading && <p>Loading...</p>}
-      {todos?.length === 0 && <p>No todos yet 🙂</p>}
+      {todos?.length === 0 && (
+        <>
+          <p>No todos yet 🙂</p>
+          <p>Add your first todo with the form above.</p>
+        </>
+      )}
       <ul className="todo-list">
         {todos?.map((todo) => (
           <li key={todo.id} className="todo-item">
@@ -209,6 +256,8 @@ useEffect(() => {
           </li>
         ))}
       </ul>
+        </>
+      )}
         </>
       )}
     </main>

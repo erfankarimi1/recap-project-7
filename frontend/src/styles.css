@@ -362,3 +362,19 @@ select {
     transition: none;
   }
 }
+
+/* The list could not be loaded: a box with the message and the "Try again" button. */
+.error-box {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--error);
+  border-radius: 0.25rem;
+}
+
+.error-box p {
+  margin: 0 0 0.5rem;
+}
+
+.error-box button {
+  border-color: var(--error);
+}
