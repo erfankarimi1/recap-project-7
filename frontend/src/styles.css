@@ -1,3 +1,49 @@
+/* Light theme (default): solid white background, text color #243C4C. */
+:root {
+  --bg: #ffffff;
+  --text: #243c4c;
+  --text-muted: #6b7f8d;
+  --border: #b7c3cc;
+  --border-soft: #dde4e9;
+  --button-bg: #ffffff;
+  --toggle-bg: #243c4c;
+  --toggle-text: #ffffff;
+  --error: #b91c1c;
+}
+
+/* Dark mode. The toggle button sets data-theme="dark" on <html>. Before the
+   script has run (or if it never sets a theme), the system setting decides. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0f1b24;
+  --text: #e3ebf0;
+  --text-muted: #8fa3b1;
+  --border: #46606f;
+  --border-soft: #253946;
+  --button-bg: #1a2c38;
+  --toggle-bg: #e3ebf0;
+  --toggle-text: #0f1b24;
+  --error: #f87171;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg: #0f1b24;
+    --text: #e3ebf0;
+    --text-muted: #8fa3b1;
+    --border: #46606f;
+    --border-soft: #253946;
+    --button-bg: #1a2c38;
+    --toggle-bg: #e3ebf0;
+    --toggle-text: #0f1b24;
+    --error: #f87171;
+  }
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -5,14 +51,56 @@
 body {
   margin: 0;
   font-family: system-ui, sans-serif;
-  background: #f4f4f5;
-  color: #18181b;
+  background: var(--bg);
+  color: var(--text);
 }
 
 main {
   max-width: 32rem;
   margin: 2rem auto;
   padding: 0 1rem;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* The dark round button: dark navy in light mode, light in dark mode. */
+.theme-toggle {
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--toggle-bg);
+  color: var(--toggle-text);
+  font-size: 1.1rem;
+  line-height: 1;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 4px 10px rgb(0 0 0 / 0.35);
+}
+
+/* No movement for people who asked their system to reduce motion. */
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle {
+    transition: none;
+  }
+
+  .theme-toggle:hover {
+    transform: none;
+  }
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
 }
 
 .todo-form {
@@ -27,15 +115,18 @@ main {
 
 input:not([type="checkbox"]) {
   padding: 0.5rem;
-  border: 1px solid #a1a1aa;
+  border: 1px solid var(--border);
   border-radius: 0.25rem;
+  background: var(--bg);
+  color: var(--text);
 }
 
 button {
   padding: 0.5rem 0.75rem;
-  border: 1px solid #a1a1aa;
+  border: 1px solid var(--border);
   border-radius: 0.25rem;
-  background: white;
+  background: var(--button-bg);
+  color: var(--text);
   cursor: pointer;
 }
 
@@ -54,7 +145,7 @@ button:disabled {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 0;
-  border-bottom: 1px solid #d4d4d8;
+  border-bottom: 1px solid var(--border-soft);
 }
 
 .todo-title {
@@ -66,11 +157,11 @@ button:disabled {
 
 .todo-title.done {
   text-decoration: line-through;
-  color: #71717a;
+  color: var(--text-muted);
 }
 
 [role="alert"] {
-  color: #b91c1c;
+  color: var(--error);
 }
 
 .visually-hidden {

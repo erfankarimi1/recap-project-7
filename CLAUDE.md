@@ -5,7 +5,7 @@ A full-stack todo app: an Express 5 API with MongoDB in `backend/`, a React app 
 ## Commands
 
 - Backend (`backend/`): `npm run dev` starts the API on http://localhost:3001, `npm run typecheck` checks the types.
-- Frontend (`frontend/`): `npm run dev` starts the app on http://localhost:5173, `npm run check` checks the types, `npm run build` builds it.
+- Frontend (`frontend/`): `npm run dev` starts the app on http://localhost:5173, `npm run check` checks the types, `npm test` runs the tests (vitest and Testing Library, `fetchTodos` and the other API functions are mocked), `npm run build` builds it.
 - `npm run dev` never finishes. **Ask the user to start it**, or start it in the background.
 - Run the type check of the part you changed before you say a task is done.
 
@@ -29,4 +29,4 @@ A full-stack todo app: an Express 5 API with MongoDB in `backend/`, a React app 
 - **Never read, print, log or commit `backend/.env`.** It holds the connection string. `.env.example` has placeholders only.
 - CORS is set up in `backend/src/app.ts` for `http://localhost:5173`. Do not change it and do not use `*`.
 - Use async/await. Name request parameters `request` and `response`. No `any`.
-- Only do what the current issue asks for. No authentication, no tests, no deployment yet.
+- Only do what the current issue asks for. No authentication, no deployment yet. Frontend stories come with tests, written test-first with `/tdd-feature`.
