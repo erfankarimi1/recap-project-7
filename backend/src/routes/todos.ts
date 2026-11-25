@@ -6,7 +6,7 @@ export const todosRouter = Router();
 // The router is mounted on /api/todos in app.ts. The contract is in docs/api-contract.md.
 todosRouter.get("/", async (request, response) => {
     const { done } = request.query;
-
+    // explain it : 
     // Without `done` all todos are returned. Any other value than true or false is a bad request.
     if (done !== undefined && done !== "true" && done !== "false") {
         response.status(400).json({ error: "done must be true or false" });
