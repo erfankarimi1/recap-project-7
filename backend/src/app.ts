@@ -6,8 +6,8 @@ import { todosRouter } from "./routes/todos";
 
 export const app = express();
 
-// The React app runs on another origin (http://localhost:5173), so the browser needs CORS headers.
-app.use(cors({ origin: "http://localhost:5173" }));
+// The React app runs on another origin (locally and on Render), so the browser needs CORS headers.
+app.use(cors({ origin: ["http://localhost:5173", "https://recap-project-7.onrender.com"] }));
 app.use(express.json());
 
 app.get("/api/health", (_request, response) => {
